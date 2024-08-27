@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <style>
+        /* Estilo general para todo el modal */
+        .modal-body,
+        .modal-title,
+        .text-lowercase,
+        .checkbox-text,
+        .description,
+        .input,
+        .form-select {
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+        }
+
+        /* Estilo del botón para activar el modal */
+        .btn-activate-modal {
+            outline: none;
+            cursor: pointer;
+            border: none;
+            padding: 0.9rem 2rem;
+            margin: 0;
+            font-weight: 700;
+            font-size: 20px;
+            border-radius: 500px;
+            overflow: hidden;
+            background: #66ff7f;
+            color: ghostwhite;
+            position: relative;
+            display: inline-block;
+            letter-spacing: 0.05rem;
+        }
+
+        .btn-activate-modal span {
+            position: relative;
+            z-index: 10;
+            transition: color 0.4s;
+        }
+
+        .btn-activate-modal:hover span {
+            color: ghostwhite;
+        }
+
+        .btn-activate-modal::before {
+            content: "";
+            background: #000;
+            width: 120%;
+            left: -10%;
+            top: 0;
+            height: 100%;
+            position: absolute;
+            z-index: 0;
+            transform: skew(30deg);
+            transition: transform 0.4s cubic-bezier(0.3, 1, 0.8, 1);
+        }
+
+        .btn-activate-modal:hover::before {
+            transform: translate3d(100%, 0, 0);
+        }
+
+        /* Estilo del input */
+        .input {
+            background-color: #f8f7f3;
+            max-width: 190px;
+            height: 40px;
+            padding: 10px;
+            border: 2px solid rgb(247, 239, 239);
+            border-radius: 5px;
+            color: white;
+        }
+
+        .input:focus {
+            color: rgb(0, 255, 255);
+            background-color: #fcf3f3;
+            outline-color: rgb(0, 255, 255);
+            box-shadow: -3px -3px 15px rgb(0, 255, 255);
+            transition: .1s;
+        }
+
+        /* Estilo del switch */
+        .flipswitch-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .flipswitch {
+            position: relative;
+            width: 60px;
+        }
+
+        .flipswitch input[type=checkbox] {
+            display: none;
+        }
+
+        .flipswitch-label {
+            display: block;
+            overflow: hidden;
+            cursor: pointer;
+            border: 1px solid #260999;
+            border-radius: 20px;
+        }
+
+        .flipswitch-inner {
+            width: 200%;
+            margin-left: -100%;
+            transition: margin 0.3s ease-in 0s;
+        }
+
+        .flipswitch-inner:before, .flipswitch-inner:after {
+            float: left;
+            width: 50%;
+            height: 30px;
+            line-height: 30px;
+            font-weight: bold;
+            box-sizing: border-box;
+        }
+
+        .flipswitch-inner:before {
+            content: "✔";
+            padding-left: 10px;
+            background-color: #15009C;
+            color: #FFFFFF;
+        }
+
+        .flipswitch-inner:after {
+            content: "X";
+            padding-right: 10px;
+            background-color: #EBEBEB;
+            color: #15009C;
+            text-align: right;
+        }
+
+        .flipswitch-switch {
+            width: 20px;
+            margin: 5px;
+            background: #FFFFFF;
+            border: 1px solid #260999;
+            border-radius: 20px;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: 30px;
+            transition: all 0.3s ease-in 0s;
+        }
+
+        .flipswitch-cb:checked + .flipswitch-label .flipswitch-inner {
+            margin-left: 0;
+        }
+
+        .flipswitch-cb:checked + .flipswitch-label .flipswitch-switch {
+            right: 0;
+        }
+
+        /* Estilo de la selección */
+        .form-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .description {
+            text-align: left;
+            flex: 1;
+            margin-right: 10px;
+        }
+
+        .form-select {
+            border: 0.1px solid #007bff;
+            border-radius: 5px;
+            padding: 0 6px;
+            font-size: 14px;
+            line-height: 38px;
+            text-align: center;
+            width: 200px; /* Ajusta el ancho según sea necesario */
+        }
+
+        /* Estilo del botón de guardar */
+        .btn-save {
+            background-color: #007bff;
+            border: 1px solid #007bff;
+            color: #fff;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            transition: background-color 0.3s, border-color 0.3s;
+            margin-top: 10px; /* Espacio arriba del botón */
+            width: 100%;
+            max-width: 100px; /* Ajusta el ancho máximo según sea necesario */
+        }
+
+        .btn-save:hover {
+            background-color: #0056b3;
+            border-color: #004085;
+        }
+
+        .btn-save:focus {
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.5);
+            outline: none;
+        }
+
+        .btn-save:active {
+            background-color: #004085;
+            border-color: #003768;
+        }
+
+        /* Estilo de la tabla en el modal */
+        .table-container {
+            margin-top: 20px;
+        }
+
+        .table {
+            width: 100%;
+            margin-top: 10px;
+            border-collapse: collapse;
+        }
+
+        .table th, .table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .table th {
+            background-color: #f4f4f4;
+        }
+    </style>
+
+    <title>TAREA MODAL</title>
+</head>
+<body>
+
+<button type="button" class="btn-activate-modal mt-5 mx-5" data-bs-toggle="modal" data-bs-target="#miModal">
+    <span>Activar modal</span>
+</button>
+
+<div class="modal fade" id="miModal" tabindex="-1" aria-hidden="true" aria-labelledby="Calificaciones">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="Calificaciones">Calificaciones Alumno</h5>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <p class="text-lowercase">Calificación Actual:</p>
+                    <span class="nota">5.0</span>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <label for="miInput">Añadir Calificación:</label>
+                    <input placeholder="Ingrese Calificacion" class="input" name="text" type="text">
+                </div>
+
+                <div class="flipswitch-container">
+                    <span class="checkbox-text">¿La calificación prevalece? :</span>
+                    <div class="flipswitch">
+                        <input checked="" id="fs" class="flipswitch-cb" name="flipswitch" type="checkbox">
+                        <label for="fs" class="flipswitch-label">
+                            <div class="flipswitch-inner"></div>
+                            <div class="flipswitch-switch"></div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group mb-3">
+                    <div class="description">Método de Evaluación:</div>
+                    <select class="form-select" aria-label="Default select example">
+                        <option selected>Calificaciones</option>
+                        <option value="1">Promedio</option>
+                        <option value="2">Nota Más Alta</option>
+                        <option value="3">Nota Más Baja</option>
+                    </select>
+                </div>
+
+                <!-- Botón Guardar -->
+                <button type="button" class="btn btn-outline-primary">Guardar</button>
+
+                <!-- Historial de Calificaciones -->
+                <div class="table-container">
+                    <h6>Historial de Calificaciones</h6>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Tipo</th>
+                                <th>Calificador</th>
+                                <th>Calificación</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2024-08-18</td>
+                                <td>Examen</td>
+                                <td>Profesor A</td>
+                                <td>9.5</td>
+                            </tr>
+                            <!-- Aquí puedes añadir más filas con PHP o directamente en el HTML -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <!-- Aquí puedes añadir botones adicionales si es necesario -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Option 1: Bootstrap Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+</body>
+</html>
+
